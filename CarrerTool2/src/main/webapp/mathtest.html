@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        #timer {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #ff0000;
+            font-size: 18px;
+            border: 2px solid #ff0000;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #fff7f7;
+        }
+
+        .question {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #scoreDisplay, #feedback, #wrongAnswers {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #wrongAnswers {
+            text-align: left;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Math Quiz</h1>
+        <p id="timer">Time Left: <span id="time">60</span> seconds</p>
+        <form id="quizForm">
+            <div class="question">
+                <p>1. What is 5 + 3?</p>
+                <input type="text" name="q1" required>
+            </div>
+            <div class="question">
+                <p>2. What is 12 × 3?</p>
+                <input type="text" name="q2" required>
+            </div>
+            <div class="question">
+                <p>3. What is 20 ÷ 4?</p>
+                <input type="text" name="q3" required>
+            </div>
+            <div class="question">
+                <p>4. What is 15 − 6?</p>
+                <input type="text" name="q4" required>
+            </div>
+            <div class="question">
+                <p>5. What is the square of 5?</p>
+                <input type="text" name="q5" required>
+            </div>
+            <div class="question">
+                <p>6. What is 9 × 9?</p>
+                <input type="text" name="q6" required>
+            </div>
+            <div class="question">
+                <p>7. What is 50% of 100?</p>
+                <input type="text" name="q7" required>
+            </div>
+            <div class="question">
+                <p>8. What is 2³ (2 raised to the power of 3)?</p>
+                <input type="text" name="q8" required>
+            </div>
+            <div class="question">
+                <p>9. What is 7 × 6?</p>
+                <input type="text" name="q9" required>
+            </div>
+            <div class="question">
+                <p>10. What is 18 ÷ 3?</p>
+                <input type="text" name="q10" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="scoreDisplay"></div>
+        <div id="feedback"></div>
+        <div id="wrongAnswers"></div>
+    </div>
+    <script>
+        const correctAnswers = [
+            "8", 
+            "36", 
+            "5", 
+            "9", 
+            "25", 
+            "81", 
+            "50", 
+            "8", 
+            "42", 
+            "6"
+        ];
+        let timer = 60;
+        const timeElement = document.getElementById("time");
+        const form = document.getElementById("quizForm");
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        const feedbackDisplay = document.getElementById("feedback");
+        const wrongAnswersDisplay = document.getElementById("wrongAnswers");
+
+        // Countdown Timer
+        const countdown = setInterval(() => {
+            if (timer > 0) {
+                timer--;
+                timeElement.textContent = timer;
+            } else {
+                clearInterval(countdown);
+                alert("Time's up! Submitting your answers.");
+                form.requestSubmit();
+            }
+        }, 1000);
+
+        // Form Submission
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            clearInterval(countdown);
+
+            const formData = new FormData(form);
+            let score = 0;
+            let wrongAnswers = "";
+
+            correctAnswers.forEach((answer, index) => {
+                const userAnswer = formData.get(`q${index + 1}`).toLowerCase().trim();
+                if (userAnswer === answer.toLowerCase()) {
+                    score++;
+                } else {
+                    wrongAnswers += `<p>Question ${index + 1}: Correct Answer is <b>${answer}</b>.</p>`;
+                }
+            });
+
+            scoreDisplay.textContent = `You scored ${score} out of ${correctAnswers.length}.`;
+
+            // Feedback
+            let feedback;
+            if (score === correctAnswers.length) {
+                feedback = "Excellent! You got all answers correct!";
+            } else if (score >= 7) {
+                feedback = "Great job! You performed very well.";
+            } else if (score >= 4) {
+                feedback = "Good attempt! Keep practicing to improve.";
+            } else {
+                feedback = "Don't give up! Try again to improve your score.";
+            }
+            feedbackDisplay.textContent = feedback;
+
+            // Display wrong answers
+            wrongAnswersDisplay.innerHTML = wrongAnswers;
+
+            form.style.display = "none";
+        });
+    </script>
+</body>
+</html>
